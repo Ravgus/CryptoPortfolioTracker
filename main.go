@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/Ravgus/CryptoPortfolioTracker/internal"
-	"strconv"
 	"sync"
 )
 
@@ -11,7 +10,7 @@ func main() {
 	internal.LoadEnv()
 
 	var portfolio = internal.GetPortfolioFromJson()
-	var totalAmount float64 = 0
+	var currentPrice float64 = 0
 
 	var wg sync.WaitGroup
 	var mu sync.Mutex
@@ -26,12 +25,45 @@ func main() {
 			price := internal.GetCoinPrice(coin.Name)
 
 			mu.Lock()
-			totalAmount += price * coin.Count
+			currentPrice += price * coin.Count
 			mu.Unlock()
 		}(i)
 	}
 
 	wg.Wait()
 
-	fmt.Println("Total Amount: " + strconv.FormatFloat(totalAmount, 'f', -1, 64))
+	fmt.Println("Total Amount: " + internal.FloatToString(currentPrice))
+
+	history := internal.GetHistory(10)
+
+	exitChan := make(chan struct{})
+
+	for i := 0; i < len(history); i++ {
+		wg.Add(1)
+
+		go func(i int) {
+			defer wg.Done()
+
+			select {
+			case <-exitChan:
+				// exit
+				return
+			default:
+				// continue
+			}
+
+			totalPrice := history[i].TotalPrice
+			percentageDifference := internal.PercentageDifference(totalPrice, currentPrice)
+
+			if percentageDifference > 25 {
+				close(exitChan) // send kill signal
+
+				internal.SendEmail(internal.CreateEmailBody(percentageDifference, history[i].Date))
+			}
+		}(i)
+	}
+
+	wg.Wait()
+
+	internal.AppendHistory(currentPrice, internal.GenerateDate())
 }
