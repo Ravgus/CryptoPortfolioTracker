@@ -1,17 +1,16 @@
 package internal
 
 import (
-	"fmt"
+	"log"
 	"math"
-	"os"
 	"strconv"
 )
 
 func StringToInt(data string) int {
 	result, err := strconv.Atoi(data)
+
 	if err != nil {
-		fmt.Println("Can't parse string to int!")
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
 	return result

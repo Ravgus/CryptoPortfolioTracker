@@ -29,9 +29,7 @@ func GetCoinPrice(name string) float64 {
 
 	var responseObject structs.CryptoCompareCoin
 
-	err = json.Unmarshal(responseData, &responseObject)
-
-	if err != nil {
+	if err := json.Unmarshal(responseData, &responseObject); err != nil {
 		log.Fatal(err)
 	}
 

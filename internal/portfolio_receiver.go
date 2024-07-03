@@ -2,7 +2,6 @@ package internal
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/Ravgus/CryptoPortfolioTracker/internal/structs"
 	"io"
 	"log"
@@ -16,17 +15,13 @@ func GetPortfolioFromJson() structs.Portfolio {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Successfully Opened portfolio.json")
-
 	defer jsonFile.Close()
 
 	byteValue, _ := io.ReadAll(jsonFile)
 
 	var portfolio structs.Portfolio
 
-	err = json.Unmarshal(byteValue, &portfolio)
-
-	if err != nil {
+	if err := json.Unmarshal(byteValue, &portfolio); err != nil {
 		log.Fatal(err)
 	}
 

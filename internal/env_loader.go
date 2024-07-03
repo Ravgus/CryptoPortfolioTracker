@@ -8,27 +8,25 @@ import (
 )
 
 func LoadEnv() {
-	envFile := ".env.local"
+	fileName := ".env.local"
 
-	if !isFileExist(envFile) {
-		envFile = ".env"
+	if !isFileExist(fileName) {
+		fileName = ".env"
 	}
 
-	if !isFileExist(envFile) {
+	if !isFileExist(fileName) {
 		fmt.Println(".env file not found!")
 
 		os.Exit(1)
 	}
 
-	err := godotenv.Load(envFile)
-
-	if err != nil {
+	if err := godotenv.Load(fileName); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func isFileExist(envFile string) bool {
-	_, err := os.Stat(envFile)
+func isFileExist(fileName string) bool {
+	_, err := os.Stat(fileName)
 
 	return !os.IsNotExist(err)
 }

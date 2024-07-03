@@ -1,9 +1,9 @@
 package internal
 
 import (
-	"encoding/csv"
+	"encoding/json"
 	"github.com/Ravgus/CryptoPortfolioTracker/internal/structs"
-	"github.com/gocarina/gocsv"
+	"io"
 	"log"
 	"os"
 )
@@ -15,17 +15,23 @@ func GetHistory(args ...int) []structs.HistoryItem {
 		size = args[0]
 	}
 
-	file, err := os.Open("history.csv")
+	jsonFile, err := os.Open("history.json")
 
 	if err != nil {
-		log.Fatal(err)
+		if os.IsNotExist(err) {
+			return nil
+		} else {
+			log.Fatal(err)
+		}
 	}
 
-	defer file.Close()
+	defer jsonFile.Close()
+
+	byteValue, _ := io.ReadAll(jsonFile)
 
 	var history []structs.HistoryItem
 
-	if err := gocsv.UnmarshalFile(file, &history); err != nil {
+	if err := json.Unmarshal(byteValue, &history); err != nil {
 		log.Fatal(err)
 	}
 
@@ -37,22 +43,35 @@ func GetHistory(args ...int) []structs.HistoryItem {
 }
 
 func AppendHistory(totalPrice float64, date string) {
-	file, err := os.OpenFile("history.csv", os.O_APPEND|os.O_WRONLY, 0644)
+	fileName := "history.json"
+
+	file, err := os.ReadFile(fileName)
+
+	if err != nil {
+		if os.IsNotExist(err) {
+			file = []byte("[]")
+		} else {
+			log.Fatal(err)
+		}
+	}
+
+	var history []structs.HistoryItem
+
+	if err := json.Unmarshal(file, &history); err != nil {
+		log.Fatal(err)
+	}
+
+	newItem := structs.HistoryItem{TotalPrice: totalPrice, Date: date}
+
+	history = append(history, newItem)
+
+	updatedData, err := json.MarshalIndent(history, "", "  ")
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	defer file.Close()
-
-	writer := csv.NewWriter(file)
-
-	defer writer.Flush()
-
-	row := []string{FloatToString(totalPrice), date}
-	err = writer.Write(row)
-
-	if err != nil {
+	if err := os.WriteFile(fileName, updatedData, 0644); err != nil {
 		log.Fatal(err)
 	}
 }
