@@ -6,6 +6,10 @@ import (
 	"sync"
 )
 
+const (
+	SignificantChangePercent = 25
+)
+
 func CheckPortfolioPriceChange(currentPrice float64, history []structs.HistoryItem) {
 	var wg sync.WaitGroup
 
@@ -28,7 +32,7 @@ func CheckPortfolioPriceChange(currentPrice float64, history []structs.HistoryIt
 			totalPrice := history[i].TotalPrice
 			percentageDifference := PercentageDifference(totalPrice, currentPrice)
 
-			if percentageDifference > 25 {
+			if percentageDifference > SignificantChangePercent {
 				close(exitChan) // send kill signal
 
 				SendEmail(CreateEmailBody(percentageDifference, history[i].Date))

@@ -2,6 +2,7 @@ package internal
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/Ravgus/CryptoPortfolioTracker/internal/structs"
 	"io"
 	"log"
@@ -19,6 +20,8 @@ func GetHistory(args ...int) []structs.HistoryItem {
 
 	if err != nil {
 		if os.IsNotExist(err) {
+			fmt.Println("history.json does not exist!")
+
 			return nil
 		} else {
 			log.Fatal(err)
@@ -49,6 +52,8 @@ func AppendHistory(totalPrice float64, date string) {
 
 	if err != nil {
 		if os.IsNotExist(err) {
+			fmt.Println("creating history.json file...")
+
 			file = []byte("[]")
 		} else {
 			log.Fatal(err)

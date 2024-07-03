@@ -2,6 +2,7 @@ package internal
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/Ravgus/CryptoPortfolioTracker/internal/structs"
 	"io"
 	"log"
@@ -12,7 +13,9 @@ func GetPortfolioFromJson() structs.Portfolio {
 	jsonFile, err := os.Open("portfolio.json")
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("portfolio.json file not found!")
+
+		os.Exit(2)
 	}
 
 	defer jsonFile.Close()

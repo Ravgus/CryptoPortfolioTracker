@@ -5,6 +5,10 @@ import (
 	"github.com/Ravgus/CryptoPortfolioTracker/internal"
 )
 
+const (
+	HistoryCheckIterations = 10
+)
+
 func main() {
 	internal.LoadEnv()
 
@@ -14,7 +18,7 @@ func main() {
 
 	fmt.Println("Total Amount: " + internal.FloatToString(currentPrice))
 
-	history := internal.GetHistory(10)
+	history := internal.GetHistory(HistoryCheckIterations)
 
 	internal.CheckPortfolioPriceChange(currentPrice, history)
 
