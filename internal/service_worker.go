@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Ravgus/CryptoPortfolioTracker/internal/structs"
 	"sync"
+	"time"
 )
 
 const (
@@ -48,25 +49,17 @@ func CheckPortfolioPriceChange(currentPrice float64, history []structs.HistoryIt
 func GetPortfolioPrice(portfolio structs.Portfolio) float64 {
 	var currentPrice float64 = 0
 
-	var wg sync.WaitGroup
-	var mu sync.Mutex
+	fmt.Println("Calculating portfolio sum...")
 
 	for i := 0; i < len(portfolio.Coins); i++ {
-		wg.Add(1)
+		coin := portfolio.Coins[i]
+		price := GetCoinPrice(coin.Name)
 
-		go func(i int) {
-			defer wg.Done()
+		// because of cryptocompare api limits
+		time.Sleep(500 * time.Millisecond)
 
-			coin := portfolio.Coins[i]
-			price := GetCoinPrice(coin.Name)
-
-			mu.Lock()
-			currentPrice += price * coin.Count
-			mu.Unlock()
-		}(i)
+		currentPrice += price * coin.Count
 	}
-
-	wg.Wait()
 
 	return currentPrice
 }
