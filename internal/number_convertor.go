@@ -16,6 +16,16 @@ func StringToInt(data string) int {
 	return result
 }
 
+func StringToFloat(data string) float64 {
+	result, err := strconv.ParseFloat(data, 64)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return result
+}
+
 func FloatToString(data float64) string {
 	return strconv.FormatFloat(data, 'f', -1, 64)
 }

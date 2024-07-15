@@ -3,6 +3,7 @@ package internal
 import (
 	"fmt"
 	"github.com/Ravgus/CryptoPortfolioTracker/internal/structs"
+	"os"
 	"sync"
 	"time"
 )
@@ -15,6 +16,13 @@ func CheckPortfolioPriceChange(currentPrice float64, history []structs.HistoryIt
 	var wg sync.WaitGroup
 
 	exitChan := make(chan struct{})
+
+	var changePercent float64
+	if len(os.Getenv("NOTIFICATION_CHANGE_PERCENT")) == 0 {
+		changePercent = SignificantChangePercent
+	} else {
+		changePercent = StringToFloat(os.Getenv("NOTIFICATION_CHANGE_PERCENT"))
+	}
 
 	for i := 0; i < len(history); i++ {
 		wg.Add(1)
@@ -33,7 +41,7 @@ func CheckPortfolioPriceChange(currentPrice float64, history []structs.HistoryIt
 			totalPrice := history[i].TotalPrice
 			percentageDifference := PercentageDifference(totalPrice, currentPrice)
 
-			if percentageDifference > SignificantChangePercent {
+			if percentageDifference > changePercent {
 				close(exitChan) // send kill signal
 
 				SendEmail(CreateEmailBody(percentageDifference, history[i].Date))

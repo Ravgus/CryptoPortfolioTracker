@@ -34,7 +34,12 @@ CRYPTO_COMPARE_API=your_crypto_compare_api_key
 SMTP_USER_NAME=john@gmail.com
 SMTP_PASSWORD=your_password
 SMTP_PORT=587
+NOTIFICATION_CHANGE_PERCENT=25
 ```
+
+P.S. 
+
+You can omit specifying of `NOTIFICATION_CHANGE_PERCENT` variable, which defines the percentage of changing your portfolio price in order to send a notification (by default it's 25%)
 
 3. Run the Tracker
 
