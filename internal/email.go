@@ -27,9 +27,17 @@ func SendEmail(body string) {
 	}
 }
 
-func CreateEmailBody(percentageDifference float64, date string) string {
+func CreatePercentEmailBody(percentageDifference float64, date string) string {
 	response := "<html><body>"
 	response += "<p>" + "Portfolio changed on " + FloatToString(percentageDifference) + "% from " + date + "</p>"
+	response += "</body></html>"
+
+	return response
+}
+
+func CreatePriceEmailBody(trackedPrice float64) string {
+	response := "<html><body>"
+	response += "<p>" + "Portfolio reached " + FloatToString(trackedPrice) + "$</p>"
 	response += "</body></html>"
 
 	return response

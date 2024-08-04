@@ -13,6 +13,32 @@ const (
 )
 
 func CheckPortfolioPriceChange(currentPrice float64, history []structs.HistoryItem) {
+	if checkByPrice(currentPrice) {
+		return
+	}
+
+	checkByPercent(currentPrice, history)
+}
+
+func GetPortfolioPrice(portfolio structs.Portfolio) float64 {
+	var currentPrice float64 = 0
+
+	fmt.Println("Calculating portfolio sum...")
+
+	for i := 0; i < len(portfolio.Coins); i++ {
+		coin := portfolio.Coins[i]
+		price := GetCoinPrice(coin.Name)
+
+		// because of cryptocompare api limits
+		time.Sleep(500 * time.Millisecond)
+
+		currentPrice += price * coin.Count
+	}
+
+	return currentPrice
+}
+
+func checkByPercent(currentPrice float64, history []structs.HistoryItem) {
 	var wg sync.WaitGroup
 
 	exitChan := make(chan struct{})
@@ -44,7 +70,7 @@ func CheckPortfolioPriceChange(currentPrice float64, history []structs.HistoryIt
 			if percentageDifference > changePercent {
 				close(exitChan) // send kill signal
 
-				SendEmail(CreateEmailBody(percentageDifference, history[i].Date))
+				SendEmail(CreatePercentEmailBody(percentageDifference, history[i].Date))
 
 				fmt.Println("Notification was sent!")
 			}
@@ -54,20 +80,18 @@ func CheckPortfolioPriceChange(currentPrice float64, history []structs.HistoryIt
 	wg.Wait()
 }
 
-func GetPortfolioPrice(portfolio structs.Portfolio) float64 {
-	var currentPrice float64 = 0
+func checkByPrice(currentPrice float64) bool {
+	if len(os.Getenv("NOTIFICATION_CHANGE_PRICE")) != 0 {
+		trackedPrice := StringToFloat(os.Getenv("NOTIFICATION_CHANGE_PRICE"))
 
-	fmt.Println("Calculating portfolio sum...")
+		if currentPrice >= trackedPrice {
+			SendEmail(CreatePriceEmailBody(trackedPrice))
 
-	for i := 0; i < len(portfolio.Coins); i++ {
-		coin := portfolio.Coins[i]
-		price := GetCoinPrice(coin.Name)
+			fmt.Println("Notification was sent!")
 
-		// because of cryptocompare api limits
-		time.Sleep(500 * time.Millisecond)
-
-		currentPrice += price * coin.Count
+			return true
+		}
 	}
 
-	return currentPrice
+	return false
 }

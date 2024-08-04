@@ -35,11 +35,13 @@ SMTP_USER_NAME=john@gmail.com
 SMTP_PASSWORD=your_password
 SMTP_PORT=587
 NOTIFICATION_CHANGE_PERCENT=25
+NOTIFICATION_CHANGE_PRICE=2500
 ```
 
 P.S. 
 
 You can omit specifying of `NOTIFICATION_CHANGE_PERCENT` variable, which defines the percentage of changing your portfolio price in order to send a notification (by default it's 25%)
+Specifying of `NOTIFICATION_CHANGE_PRICE` variable gives you ability to track your total portfolio price. 
 
 3. Run the Tracker
 
