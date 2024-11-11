@@ -27,7 +27,7 @@ func StringToFloat(data string) float64 {
 }
 
 func FloatToString(data float64) string {
-	return strconv.FormatFloat(data, 'f', -1, 64)
+	return strconv.FormatFloat(data, 'f', 2, 64)
 }
 
 func PercentageDifference(oldValue, newValue float64) float64 {

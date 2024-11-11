@@ -2,10 +2,11 @@ package internal
 
 import (
 	"fmt"
-	"github.com/Ravgus/CryptoPortfolioTracker/internal/structs"
 	"os"
 	"sync"
 	"time"
+
+	"github.com/Ravgus/CryptoPortfolioTracker/internal/structs"
 )
 
 const (
@@ -85,7 +86,7 @@ func checkByPrice(currentPrice float64) bool {
 		trackedPrice := StringToFloat(os.Getenv("NOTIFICATION_CHANGE_PRICE"))
 
 		if currentPrice >= trackedPrice {
-			SendEmail(CreatePriceEmailBody(trackedPrice))
+			SendEmail(CreatePriceEmailBody(currentPrice, trackedPrice))
 
 			fmt.Println("Notification was sent!")
 

@@ -1,9 +1,10 @@
 package internal
 
 import (
-	"github.com/go-mail/mail"
 	"log"
 	"os"
+
+	"github.com/go-mail/mail"
 )
 
 func SendEmail(body string) {
@@ -35,9 +36,9 @@ func CreatePercentEmailBody(percentageDifference float64, date string) string {
 	return response
 }
 
-func CreatePriceEmailBody(trackedPrice float64) string {
+func CreatePriceEmailBody(currentPrice float64, trackedPrice float64) string {
 	response := "<html><body>"
-	response += "<p>" + "Portfolio reached " + FloatToString(trackedPrice) + "$</p>"
+	response += "<p>" + "Portfolio reached " + FloatToString(trackedPrice) + "$. Current price is " + FloatToString(currentPrice) + "$</p>"
 	response += "</body></html>"
 
 	return response
